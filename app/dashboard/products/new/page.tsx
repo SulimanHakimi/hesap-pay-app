@@ -6,6 +6,7 @@ import Link from 'next/link';
 export default function NewProductPage() {
   const [form, setForm] = useState({ name: '', description: '', price: '', category: '', imageUrl: '', stock: '', active: true });
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState('');
   const [created, setCreated] = useState<{ id: string; name: string } | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -22,14 +23,27 @@ export default function NewProductPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    const res = await fetch('/api/products', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ ...form, stock: form.stock ? parseInt(form.stock) : -1 }),
-    });
-    const data = await res.json();
-    setSaving(false);
-    if (res.ok) setCreated({ id: data.id, name: data.name });
+    setError('');
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...form, stock: form.stock ? parseInt(form.stock) : -1 }),
+      });
+      const text = await res.text();
+      let data: any = {};
+      try { data = text ? JSON.parse(text) : {}; } catch { /* non-JSON */ }
+      if (!res.ok) {
+        setError(data?.error || `Request failed (${res.status}): ${text.slice(0, 200) || 'no body'}`);
+        return;
+      }
+      if (data?.id) setCreated({ id: data.id, name: data.name });
+      else setError('Server returned no product data');
+    } catch (err: any) {
+      setError(err?.message || 'Network error');
+    } finally {
+      setSaving(false);
+    }
   };
 
   // ── Success screen ──
@@ -79,6 +93,11 @@ export default function NewProductPage() {
       <h1 className="text-2xl font-black text-gray-900 mb-6">Add Product</h1>
 
       <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-6 max-w-2xl space-y-5">
+        {error && (
+          <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 font-medium">
+            ⚠ {error}
+          </div>
+        )}
         <Field label="Product Name *">
           <input required type="text" value={form.name} onChange={e => set('name', e.target.value)} placeholder="e.g. Wireless Headphones" className="field" />
         </Field>
@@ -86,8 +105,8 @@ export default function NewProductPage() {
           <textarea value={form.description} onChange={e => set('description', e.target.value)} placeholder="Describe your product…" rows={3} className="field resize-none" />
         </Field>
         <div className="grid grid-cols-2 gap-4">
-          <Field label="Price (USD) *">
-            <input required type="number" min="0" step="0.01" value={form.price} onChange={e => set('price', e.target.value)} placeholder="0.00" className="field" />
+          <Field label="Suggested amount (AFN, optional)">
+            <input type="number" min="0" step="0.01" value={form.price} onChange={e => set('price', e.target.value)} placeholder="Buyer chooses if blank" className="field" />
           </Field>
           <Field label="Category">
             <input type="text" value={form.category} onChange={e => set('category', e.target.value)} placeholder="e.g. Electronics" className="field" />
