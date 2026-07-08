@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { findStaticProduct } from '@/lib/static-products';
+import { createOrder } from '@/lib/db';
 
 const HESABPAY_BASE = 'https://api.hesab.com/api/v1';
 const HESABPAY_API_KEY_FALLBACK = 'ZTRiMGM3YTUtNWU0MC00NzgxLWE3YmQtODE3NDZkMzc0NjExX19iMTdhNDhhZDZjZTk0NzNmZjE3MA==';
@@ -28,9 +29,21 @@ export async function POST(req: NextRequest) {
     const apiKey = process.env.HESABPAY_API_KEY || HESABPAY_API_KEY_FALLBACK;
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop.sheen.af';
 
-    // Transient order id — passed to HesabPay so success/failure pages can show a ref.
-    // Not stored anywhere; webhook will receive this id and we just log it.
-    const orderId = genOrderId();
+    // Create the order in database to track status and customer details securely
+    const order = await createOrder({
+      itemId: item.id,
+      itemType: 'product',
+      itemName: item.name,
+      amount: numericAmount,
+      customerEmail: customerEmail || '',
+      customerName: customerName || '',
+    });
+
+    if (!order) {
+      return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });
+    }
+
+    const orderId = order.id;
 
     const payload = {
       email: customerEmail || undefined,

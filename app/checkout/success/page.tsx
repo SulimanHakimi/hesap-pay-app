@@ -10,67 +10,133 @@ type HesabPayRedirect = {
   transaction_id: string | null;
 };
 
-function parseRedirectData(raw: string | null): HesabPayRedirect | null {
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
-}
-
 function SuccessContent() {
   const params = useSearchParams();
   const orderId = params.get('order');
-  const redirectData = parseRedirectData(params.get('data'));
+  const rawRedirectData = params.get('data');
   const [order, setOrder] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [verified, setVerified] = useState(false);
 
   useEffect(() => {
-    if (orderId) {
-      fetch('/api/orders').then(r => r.json()).then((orders: any[]) => {
-        setOrder(orders.find(o => o.id === orderId) || null);
-      });
+    if (!orderId) {
+      setError('Invalid redirect URL: order reference is missing.');
+      setLoading(false);
+      return;
     }
-  }, [orderId]);
+
+    let redirectData = null;
+    if (rawRedirectData) {
+      try {
+        redirectData = JSON.parse(rawRedirectData);
+      } catch (err) {
+        console.error('Failed to parse redirect data', err);
+      }
+    }
+
+    // Call backend verification API to check payment and send email
+    fetch('/api/checkout/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId, redirectData }),
+    })
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) {
+          throw new Error(data.error || 'Payment verification failed.');
+        }
+        return data;
+      })
+      .then((data) => {
+        setOrder(data.order);
+        setVerified(true);
+      })
+      .catch((err: any) => {
+        setError(err.message || 'We could not verify your payment with HesabPay.');
+        setVerified(false);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, [orderId, rawRedirectData]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-6">
+        <div className="text-center">
+          <div className="inline-block w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin mb-4" />
+          <p className="text-sm font-semibold text-slate-500">Verifying payment status with HesabPay…</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !verified) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-6">
+        <div className="bg-white rounded-3xl border border-rose-100 shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-1.5 bg-rose-500" />
+          <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6">
+            <span className="text-4xl text-rose-500" style={{ display: 'inline-block', transform: 'translateY(-2px)' }}>❌</span>
+          </div>
+          <h1 className="text-2xl font-black text-slate-900 mb-2">Payment Verification Failed</h1>
+          <p className="text-sm text-slate-500 leading-relaxed mb-8">
+            {error || 'Your payment was not completed or could not be verified. You have not been charged.'}
+          </p>
+          <Link href="/sulimanhakimi" className="w-full bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-2xl font-semibold transition-colors inline-block text-sm text-center">
+            Try Again
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-5">
-          <span className="text-4xl">✅</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-6">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-emerald-500" />
+        <div className="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span className="text-4xl text-emerald-500" style={{ display: 'inline-block', transform: 'translateY(-2px)' }}>✓</span>
         </div>
-        <h1 className="text-2xl font-black text-gray-900 mb-2">Payment Successful!</h1>
-        <p className="text-gray-500 leading-relaxed mb-4">
-          {redirectData?.message || 'Thank you for your purchase. You should receive a confirmation shortly.'}
+        <h1 className="text-2xl font-black text-slate-900 mb-2">Payment Successful!</h1>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6 font-medium">
+          Thank you. Your payment was successfully received.
         </p>
-        {(order || redirectData?.transaction_id) && (
-          <div className="bg-gray-50 rounded-xl p-4 text-left text-sm mb-6 space-y-1.5">
-            {order && (
-              <>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Item</span>
-                  <span className="font-semibold text-gray-900">{order.item_name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Amount</span>
-                  <span className="font-semibold text-gray-900">${parseFloat(order.amount).toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Order ID</span>
-                  <span className="font-mono text-xs text-gray-600">{order.id}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Status</span>
-                  <span className="font-semibold text-gray-900 capitalize">{order.status}</span>
-                </div>
-              </>
-            )}
-            {redirectData?.transaction_id && (
-              <div className="flex justify-between">
-                <span className="text-gray-500">Transaction</span>
-                <span className="font-mono text-xs text-gray-600">{redirectData.transaction_id}</span>
+        
+        {order && (
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-5 text-left text-sm mb-8 space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Item</span>
+              <span className="font-bold text-slate-900">{order.item_name}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Amount</span>
+              <span className="font-extrabold text-blue-600 text-base">؋{parseFloat(order.amount).toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Order ID</span>
+              <span className="font-mono text-[11px] text-slate-600 font-bold">{order.id}</span>
+            </div>
+            {order.hesabpay_txn_id && (
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Transaction ID</span>
+                <span className="font-mono text-[11px] text-slate-600 font-bold">{order.hesabpay_txn_id}</span>
               </div>
             )}
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Customer</span>
+              <span className="font-bold text-slate-900 text-xs">{order.customer_name}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-slate-500 font-semibold text-xs uppercase tracking-wider">Status</span>
+              <span className="font-bold text-emerald-600 text-xs uppercase tracking-wider px-2 py-0.5 bg-emerald-50 rounded-md border border-emerald-100">Verified</span>
+            </div>
           </div>
         )}
-        <Link href="/store" className="bg-blue-600 text-white px-6 py-3 rounded-xl font-semibold hover:bg-blue-700 transition-colors inline-block">
-          Continue Shopping
+        
+        <Link href="/sulimanhakimi" className="w-full bg-slate-900 hover:bg-slate-800 text-white px-6 py-3.5 rounded-2xl font-semibold transition-colors inline-block text-sm text-center">
+          Make Another Payment
         </Link>
       </div>
     </div>

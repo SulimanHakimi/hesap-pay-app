@@ -14,9 +14,9 @@ export type StaticProduct = {
 export const STATIC_PRODUCTS: StaticProduct[] = [
   {
     id: 'mptqbhjkvc87u',                    // keep the existing link working
-    name: 'Sheen Store Payment',
-    description: 'Pay any amount to Sheen Store via HesabPay.',
-    price: 10,
+    name: 'Payment',
+    description: 'Pay any amount via HesabPay.',
+    price: 2560,
     category: 'General',
     active: true,
   },

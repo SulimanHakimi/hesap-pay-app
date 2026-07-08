@@ -21,27 +21,30 @@ function FailedContent() {
   const redirectData = parseRedirectData(params.get('data'));
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-6">
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-10 max-w-md w-full text-center">
-        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-5">
-          <span className="text-4xl">❌</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center px-6">
+      <div className="bg-white rounded-3xl border border-rose-100 shadow-2xl p-10 max-w-md w-full text-center relative overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-1.5 bg-rose-500" />
+        <div className="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-6">
+          <span className="text-4xl text-rose-500" style={{ display: 'inline-block', transform: 'translateY(-2px)' }}>❌</span>
         </div>
-        <h1 className="text-2xl font-black text-gray-900 mb-2">Payment Failed</h1>
-        <p className="text-gray-500 leading-relaxed mb-6">
+        <h1 className="text-2xl font-black text-slate-900 mb-2">Payment Failed</h1>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6">
           {redirectData?.message || 'Your payment was not completed. You have not been charged.'}
         </p>
+        
         {orderId && (
-          <p className="text-xs text-gray-400 mb-1 font-mono">Ref: {orderId}</p>
+          <p className="text-xs font-mono font-bold text-slate-400 mb-1">Ref: {orderId}</p>
         )}
         {redirectData?.transaction_id && (
-          <p className="text-xs text-gray-400 mb-6 font-mono">Txn: {redirectData.transaction_id}</p>
+          <p className="text-xs font-mono font-bold text-slate-400 mb-6">Txn: {redirectData.transaction_id}</p>
         )}
+        
         <div className="flex gap-3 justify-center mt-6">
-          <Link href="/store" className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-semibold hover:bg-blue-700 transition-colors">
+          <Link href="/sulimanhakimi" className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-3 rounded-2xl text-xs font-bold transition-all text-center flex-1">
             Try Again
           </Link>
-          <Link href="/store" className="px-5 py-2.5 rounded-xl font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50 transition-colors">
-            Back to Store
+          <Link href="/sulimanhakimi" className="px-5 py-3 rounded-2xl text-xs font-bold text-slate-600 border border-slate-200 hover:bg-slate-50 transition-all text-center flex-1">
+            Return Home
           </Link>
         </div>
       </div>
