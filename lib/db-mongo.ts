@@ -7,9 +7,31 @@ let cachedDb: Db | null = null;
 
 async function getDb(): Promise<Db> {
   if (cachedDb) return cachedDb;
-  const uri = process.env.MONGODB_URI;
+  let uri = process.env.MONGODB_URI;
   if (!uri) throw new Error('MONGODB_URI is not set');
-  const dbName = process.env.MONGODB_DB || 'hesap_pay';
+
+  // Sanitize the database name inside the connection URI if it contains dots
+  try {
+    const urlObj = new URL(uri);
+    const pathDb = urlObj.pathname.startsWith('/') ? urlObj.pathname.slice(1) : urlObj.pathname;
+    if (pathDb && pathDb.includes('.')) {
+      urlObj.pathname = '/' + pathDb.replace(/\./g, '_');
+      uri = urlObj.toString();
+    }
+  } catch (err) {
+    // Ignore URL parsing errors and fallback to raw URI
+  }
+
+  let rawDbName = process.env.MONGODB_DB || 'hesap_pay';
+  
+  // If the user accidentally set MONGODB_DB to the connection URI string, fall back to a safe database name
+  if (rawDbName.startsWith('mongodb://') || rawDbName.startsWith('mongodb+srv://')) {
+    rawDbName = 'hesap_pay';
+  }
+
+  // MongoDB database names cannot contain '.'
+  const dbName = rawDbName.replace(/\./g, '_');
+
   const client = cachedClient ?? new MongoClient(uri);
   if (!cachedClient) {
     await client.connect();
