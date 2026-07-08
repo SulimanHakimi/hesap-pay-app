@@ -3,7 +3,6 @@ import { findStaticProduct } from '@/lib/static-products';
 import { createOrder } from '@/lib/db';
 
 const HESABPAY_BASE = 'https://api.hesab.com/api/v1';
-const HESABPAY_API_KEY_FALLBACK = 'ZTRiMGM3YTUtNWU0MC00NzgxLWE3YmQtODE3NDZkMzc0NjExX19iMTdhNDhhZDZjZTk0NzNmZjE3MA==';
 
 function genOrderId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
@@ -26,7 +25,11 @@ export async function POST(req: NextRequest) {
     if (!item) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     if (!item.active) return NextResponse.json({ error: 'This item is not available' }, { status: 400 });
 
-    const apiKey = process.env.HESABPAY_API_KEY || HESABPAY_API_KEY_FALLBACK;
+    const apiKey = process.env.HESABPAY_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json({ error: 'HESABPAY_API_KEY is not configured in the environment variables' }, { status: 500 });
+    }
+
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://shop.sheen.af';
 
     // Create the order in database to track status and customer details securely
