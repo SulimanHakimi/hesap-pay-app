@@ -4,6 +4,11 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Sheen Payment",
   description: "Sheen payment gateway for sheen clients and sheen employees",
+  icons: {
+    icon: "https://agency.sheen.af/logo.png",
+    shortcut: "https://agency.sheen.af/logo.png",
+    apple: "https://agency.sheen.af/logo.png",
+  },
   openGraph: {
     title: "Sheen Payment",
     description: "Sheen payment gateway for sheen clients and sheen employees",

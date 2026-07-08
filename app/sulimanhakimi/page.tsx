@@ -4,6 +4,11 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = {
   title: 'sheen payment',
   description: 'sheen payment gateway for sheen clients and sheen employees',
+  icons: {
+    icon: 'https://agency.sheen.af/logo.png',
+    shortcut: 'https://agency.sheen.af/logo.png',
+    apple: 'https://agency.sheen.af/logo.png',
+  },
   openGraph: {
     title: 'sheen payment',
     description: 'sheen payment gateway for sheen clients and sheen employees',

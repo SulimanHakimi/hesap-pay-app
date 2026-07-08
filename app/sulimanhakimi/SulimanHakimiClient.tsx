@@ -75,20 +75,20 @@ export default function SulimanHakimiClient() {
   return (
     <div className="min-h-screen bg-white flex flex-col md:flex-row">
       
-      {/* LEFT PANEL: Black Summary Background */}
-      <div className="w-full md:w-[40%] bg-black text-white p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-zinc-900">
+      {/* LEFT PANEL: Brand Color Background */}
+      <div className="w-full md:w-[40%] bg-[#1cb594] text-white p-8 md:p-16 flex flex-col justify-between border-b md:border-b-0 md:border-r border-[#179c7f]">
         <div className="space-y-12">
           <div>
-            <div className="inline-flex items-center gap-2 text-zinc-400 font-bold uppercase tracking-wider text-[10px]">
-              <span className="w-2 h-2 bg-zinc-400 rounded-full" />
+            <div className="inline-flex items-center gap-2 text-emerald-100/90 font-bold uppercase tracking-wider text-[10px]">
+              <span className="w-2 h-2 bg-emerald-100 rounded-full" />
               Suliman Hakimi
             </div>
             <h1 className="text-3xl font-light tracking-tight mt-4 text-white">Payment Gateway</h1>
-            <p className="text-zinc-500 text-sm mt-1.5 font-medium">Secure Payment Terminal</p>
+            <p className="text-emerald-50/80 text-sm mt-1.5 font-medium">Secure Payment Terminal</p>
           </div>
 
-          <div className="pt-8 border-t border-zinc-900">
-            <div className="text-zinc-500 text-[10px] font-bold uppercase tracking-wider">Amount to Pay</div>
+          <div className="pt-8 border-t border-[#179c7f]">
+            <div className="text-emerald-100/90 text-[10px] font-bold uppercase tracking-wider">Amount to Pay</div>
             <div className="text-5xl font-extralight mt-3 tracking-tight text-white">
               ؋{amountValid ? numericAmount.toLocaleString() : '0'}
             </div>
@@ -96,7 +96,7 @@ export default function SulimanHakimiClient() {
         </div>
 
         <div className="mt-16 md:mt-0 space-y-6">
-          <div className="space-y-3.5 bg-zinc-950 p-6 rounded-2xl border border-zinc-900 text-xs text-zinc-400 font-medium">
+          <div className="space-y-3.5 bg-black/10 p-6 rounded-2xl border border-white/10 text-xs text-emerald-50 font-medium">
             <div className="flex justify-between">
               <span>Merchant</span>
               <span className="text-white font-bold">Suliman Hakimi</span>
@@ -111,7 +111,7 @@ export default function SulimanHakimiClient() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 text-[10px] text-zinc-500 uppercase tracking-widest font-bold">
+          <div className="flex items-center gap-2 text-[10px] text-emerald-100/80 uppercase tracking-widest font-bold">
             <Lock className="w-3.5 h-3.5" />
             Payments Secured and Encrypted
           </div>
@@ -127,7 +127,7 @@ export default function SulimanHakimiClient() {
 
           {error && (
             <div className="mb-6 p-4 bg-zinc-50 border border-zinc-200 rounded-xl text-xs text-black font-bold flex items-center gap-2.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-black shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#1cb594] shrink-0" />
               {error}
             </div>
           )}
@@ -146,7 +146,7 @@ export default function SulimanHakimiClient() {
                     value={name}
                     onChange={e => setName(e.target.value)}
                     placeholder="Full name"
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-11 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black transition-all"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-11 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-[#1cb594] focus:bg-white focus:ring-1 focus:ring-[#1cb594] transition-all"
                   />
                 </div>
               </div>
@@ -161,7 +161,7 @@ export default function SulimanHakimiClient() {
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                     placeholder="you@example.com"
-                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-11 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-black focus:bg-white focus:ring-1 focus:ring-black transition-all"
+                    className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-11 pr-4 py-3 text-sm text-black placeholder-zinc-400 focus:outline-none focus:border-[#1cb594] focus:bg-white focus:ring-1 focus:ring-[#1cb594] transition-all"
                   />
                 </div>
               </div>
@@ -182,7 +182,7 @@ export default function SulimanHakimiClient() {
                       onClick={() => handlePresetSelect(val)}
                       className={`py-3 rounded-xl border text-xs font-bold transition-all duration-150 active:scale-[0.98] ${
                         active
-                          ? 'bg-black border-black text-white shadow-sm font-extrabold'
+                          ? 'bg-[#1cb594] border-[#1cb594] text-white shadow-sm font-extrabold'
                           : 'bg-white border-zinc-200 text-zinc-800 hover:bg-zinc-50 hover:border-zinc-300'
                       }`}
                     >
@@ -212,13 +212,13 @@ export default function SulimanHakimiClient() {
                     value={amount}
                     onChange={e => setAmount(e.target.value)}
                     placeholder="Enter custom amount"
-                    className="w-full border border-zinc-200 bg-white rounded-xl pl-9 pr-24 py-3 text-sm font-bold text-black focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all"
+                    className="w-full border border-zinc-200 bg-white rounded-xl pl-9 pr-24 py-3 text-sm font-bold text-black focus:outline-none focus:border-[#1cb594] focus:ring-1 focus:ring-[#1cb594] transition-all"
                     autoFocus
                   />
                   <button
                     type="button"
                     onClick={() => handlePresetSelect(5000)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-500 hover:text-black transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-zinc-500 hover:text-[#1cb594] transition-colors"
                   >
                     Use Presets
                   </button>
@@ -230,7 +230,7 @@ export default function SulimanHakimiClient() {
             <button
               type="submit"
               disabled={loading || !amountValid}
-              className="w-full bg-black hover:bg-zinc-900 text-white py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
+              className="w-full bg-[#1cb594] hover:bg-[#159e80] text-white py-4 rounded-xl font-bold text-sm tracking-wide transition-all duration-150 active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 mt-4"
             >
               {loading ? (
                 <span className="inline-block w-4 h-4 border-2 border-white/25 border-t-white rounded-full animate-spin" />
