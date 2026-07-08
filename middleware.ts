@@ -11,7 +11,7 @@ function getSecret() {
 const PUBLIC_API = [
   '/api/checkout',   // POST to create HesabPay session
   '/api/webhook',    // POST from HesabPay after payment
-  '/api/auth',       // POST login / logout
+  '/api/hesabpay',   // POST webhook callback from HesabPay (public)
 ];
 
 // Public GET endpoints — no auth required.

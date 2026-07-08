@@ -5,7 +5,7 @@ export type StaticProduct = {
   id: string;
   name: string;
   description: string;
-  price: number;          // suggested amount in AFN
+  price?: number;          // optional suggested amount in AFN
   category?: string;
   image_url?: string;
   active: boolean;
@@ -14,9 +14,8 @@ export type StaticProduct = {
 export const STATIC_PRODUCTS: StaticProduct[] = [
   {
     id: 'mptqbhjkvc87u',                    // keep the existing link working
-    name: 'Payment',
-    description: 'Pay any amount via HesabPay.',
-    price: 2560,
+    name: 'Suliman Hakimi',
+    description: 'Pay any amount to Suliman Hakimi via HesabPay',
     category: 'General',
     active: true,
   },
